@@ -40,9 +40,9 @@ Material:
   m_Shader: {fileID: -6465566751694194690, guid: 4256ec906410d88498dc01c06ba23121, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
+  m_ValidKeywords: []
+  m_InvalidKeywords:
   - _DISABLE_SSR_TRANSPARENT
-  m_InvalidKeywords: []
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -179,7 +179,6 @@ Material:
     - _Emmision_Tint: {r: 1, g: 1, b: 1, a: 1}
     - _Specular_Tint: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
-  m_AllowLocking: 1
 --- !u!114 &7027375520594329244
 MonoBehaviour:
   m_ObjectHideFlags: 11

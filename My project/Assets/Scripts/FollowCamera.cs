@@ -3,41 +3,62 @@ using UnityEngine;
 public class FollowCamera : MonoBehaviour
 {
     [Header("Objetivo")]
-    public Transform target;                 // Arrastra aquí el avión
+    public Transform target;                 // Arrastra aquí el avión (el objeto con el Rigidbody)
 
     [Header("Posición")]
     public Vector3 offset = new Vector3(0f, 3f, -10f);  // detrás y arriba
-    public float positionSmooth = 5f;
 
-    [Header("Rotación")]
-    public float lookSmooth = 5f;
-    public Vector3 lookOffset = new Vector3(0f, 1f, 0f); // mira un poco arriba del avión
+    [Header("Seguimiento")]
+    public float rotationFollow = 4f;        // Más bajo = la cámara "se queda atrás" más en los giros
 
-    private Vector3 velocity = Vector3.zero;
+    [Header("Mirada")]
+    public float lookAhead = 30f;            // Mira un punto delante del avión
+    public Vector3 lookOffset = new Vector3(0f, 1f, 0f);
+    public float lookSmooth = 8f;
+
+    private Quaternion followRotation;
+
+    void Start()
+    {
+        if (target != null)
+            followRotation = NoRoll(target.rotation);
+    }
 
     void LateUpdate()
     {
         if (target == null) return;
 
-        // Posición deseada: detrás del avión, en su espacio local
-        Vector3 desiredPos = target.position + target.TransformDirection(offset);
+        float dt = Time.deltaTime;
+        Quaternion targetRot = NoRoll(target.rotation);
 
-        // Suavizado de posición
-        transform.position = Vector3.SmoothDamp(
-            transform.position,
-            desiredPos,
-            ref velocity,
-            1f / positionSmooth
+        // 1) La orientación de seguimiento persigue a la del avión (sin alabeo)
+        //    con retraso suave. (1 - exp) hace el suavizado igual a cualquier FPS.
+        followRotation = Quaternion.Slerp(
+            followRotation,
+            targetRot,
+            1f - Mathf.Exp(-rotationFollow * dt)
         );
 
-        // Rotación: mirar al avión (con un pequeño offset vertical)
-        Vector3 lookPoint = target.position + target.TransformDirection(lookOffset);
-        Quaternion desiredRot = Quaternion.LookRotation(lookPoint - transform.position);
+        // 2) Posición: siempre a la misma distancia del avión.
+        transform.position = target.position + followRotation * offset;
+
+        // 3) Mirada: un punto delante del avión, así ves hacia dónde vas
+        Vector3 lookPoint = target.position
+                          + targetRot * Vector3.forward * lookAhead
+                          + targetRot * lookOffset;
+
+        Quaternion desiredRot = Quaternion.LookRotation(lookPoint - transform.position, Vector3.up);
 
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
             desiredRot,
-            lookSmooth * Time.deltaTime
+            1f - Mathf.Exp(-lookSmooth * dt)
         );
+    }
+
+    // Devuelve la rotación del objetivo sin alabeo (solo cabeceo y guiñada)
+    Quaternion NoRoll(Quaternion q)
+    {
+        return Quaternion.LookRotation(q * Vector3.forward, Vector3.up);
     }
 }
