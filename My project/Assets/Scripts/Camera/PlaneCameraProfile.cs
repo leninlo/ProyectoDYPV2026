@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlaneCameraProfile : MonoBehaviour
 {
     [Header("1. Tercera persona (detrás)")]
-    public Vector3 chaseOffset = new Vector3(0f, 3f, -10f);
+    public Vector3 chaseOffset = new Vector3(0f, 3f, -8f);
     public float lookAhead = 30f;
     public Vector3 lookOffset = new Vector3(0f, 1f, 0f);
 

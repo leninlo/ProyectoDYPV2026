@@ -20,7 +20,6 @@ public class SimplePlaneController : MonoBehaviour
     public float inputSmoothing = 5f;
 
     [Header("4. Inclinación visual al girar")]
-    //public Transform visualModel;         // Hijo con el modelo 3D
     public float maxBank = 30f;           // Alabeo (eje Z): alas inclinadas
     public float maxVisualYaw = 8f;       // Giro extra del morro (eje Y), leve
     public float bankSmoothing = 4f;
@@ -29,8 +28,9 @@ public class SimplePlaneController : MonoBehaviour
     private float pitch, yaw;
     private float pitchInput, turnInput;
     private float bank, visualYaw;
-    private float currentSpeed;
+    public float currentSpeed; //publico
     private bool boosting;
+
 
     void Start()
     {
@@ -64,7 +64,6 @@ public class SimplePlaneController : MonoBehaviour
         float rate = boosting ? acceleration : deceleration;
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, rate * Time.deltaTime);
 
-        //ApplyVisualBank();
     }
 
     void FixedUpdate()
@@ -84,22 +83,7 @@ public class SimplePlaneController : MonoBehaviour
         // El alabeo gira sobre el eje de avance, así que no altera la dirección del vuelo
         rb.velocity = rot * Vector3.forward * currentSpeed;
     }
-    /*
-    void ApplyVisualBank()
-    {
-        if (visualModel == null) return;
-
-        // D (+1): ala derecha abajo (Z negativo) y morro un poco a la derecha (Y positivo)
-        float targetBank = -turnInput * maxBank;
-        float targetYaw = turnInput * maxVisualYaw;
-
-        float t = bankSmoothing * Time.deltaTime;
-        bank = Mathf.Lerp(bank, targetBank, t);
-        visualYaw = Mathf.Lerp(visualYaw, targetYaw, t);
-
-        visualModel.localRotation = Quaternion.Euler(0f, visualYaw, bank);
-    }*/
-
+ 
     float NormalizeAngle(float angle)
     {
         angle = angle % 360f;
